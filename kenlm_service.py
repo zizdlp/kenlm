@@ -4,7 +4,7 @@ from cachetools import cached  ### model 缓存
 def load_model(lang):
     lm_config = kenlm.Config()
     lm_config.load_method = 2
-    model_path="/metadata0/wxl_data/lm_sp/{lang}.arpa.bin"
+    model_path=f"/metadata0/wxl_data/lm_sp/{lang}.arpa.bin"
     lm = kenlm.Model(model_path, lm_config)
     return lm
 def process_line(model,line):
