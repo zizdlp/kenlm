@@ -11,4 +11,4 @@ COPY . .
 EXPOSE 8000
 
 # 使用 Gunicorn 启动 Flask 应用
-CMD ["gunicorn", "-w", "32", "-b", "0.0.0.0:8000", "app:app"]
+CMD ["gunicorn", "-w", "10", "-b", "0.0.0.0:8000", "app:app"]
