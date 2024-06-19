@@ -3,7 +3,9 @@ import time
 from pyspark.sql import SparkSession
 import sys
 import subprocess
-
+import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 def getPIP(index):
     pips = [
         [],
@@ -100,19 +102,20 @@ if __name__ == "__main__":
 
     config = Config(
         isSample=False,
-        n_segments=2,
+        n_segments=1,
         sampleRate=0.01,
         cache_dir="/data0/k8s/node0_data/ccnet_spark/cached_data/",
-        output_dir="/data0/k8s/node0_data/ccnet_spark/cached_data/",
         fasttext_model_path="/data0/k8s/node0_data/ccnet_spark/lid.bin",
         lm_dir="/data0/k8s/node0_data/ccnet_spark/lm_sp",
         cutoff_csv_path="/data0/k8s/node0_data/ccnet_spark/cutoff.csv",
         dump="2019-18",
         pipeline=pip,
         use_hdfs=True,
+        repartation_count=36,
+        repartation_lang_count=36,
         hdfs_http_url="http://node0:9870",
         hdfs_hdfs_url="hdfs://node0:9898",
-        hdfs_dir = "/data0/k8s/node0_data/ccnet_spark/cached_data/"
+        hdfs_dir = "/data0/k8s/node0_data/ccnet_spark/cached_data/",
     )
 
     pipeline = Pipeline(config, spark)
@@ -132,4 +135,12 @@ if __name__ == "__main__":
     print(f"pipeline:{[i.value for i in pip]}, time consume:{round(e-s,3)}s")
     subprocess.run(["bash", "/home/zz/io_nvme.sh"], stdout=open("/home/zz/new_nvme.log", "w"))
     subprocess.run(["bash", "/home/zz/calculate_cluster.sh"])
-    
+
+    convert2pdf_path = str(sys.argv[0]) 
+    if(convert2pdf_path!=""):
+        print("start convert df to pdf")
+        df=pipeline.load_result_data()
+        pdf = df.toPandas()
+        table = pa.Table.from_pandas(pdf)
+        # 将 PyArrow 表保存为 Parquet 文件
+        pq.write_table(table, f'{convert2pdf_path}')

@@ -12,6 +12,8 @@ run_ccnet:
 use_ccnet:
 	sudo docker exec -it base-service-ccnet bash
 profile_ccnet:
-	python3 test_ccnet.py 1
+	python3 test_ccnet.py 8
 profile_cluster:
-	bash /opt/chukonu/python/run.sh /home/zz/kenlm_service/test_cluster.py
+	bash /opt/chukonu/python/run_ccnet.sh /home/zz/kenlm_service/test_cluster.py
+profile_cluster_c:
+	bash /opt/chukonu/python/run_ccnet_c.sh /home/zz/kenlm_service/test_cluster.py "/metadata0/wxl_data/cached_data/pdf_result_aa.parquet"
